@@ -29,7 +29,7 @@ const DeviceNetwork = () => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async (is_refresh=true) => {
+  const fetchData = async (is_refresh = true) => {
     try {
       if (device) {
         setLoading(true)
@@ -47,7 +47,7 @@ const DeviceNetwork = () => {
               isClosable: true,
             })
           }
-          if(!is_refresh){
+          if (!is_refresh) {
             setDeviceNetwork(undefined);
           }
         } else {
@@ -55,12 +55,12 @@ const DeviceNetwork = () => {
         }
       }
     } catch (error) {
-      if(!is_refresh){
+      if (!is_refresh) {
         setDeviceNetwork(undefined);
       }
       console.error("Error fetching data:", error);
     }
-    finally{
+    finally {
       setLoading(false)
     }
   };
@@ -68,6 +68,40 @@ const DeviceNetwork = () => {
     fetchData();
   }, [device]);
 
+  const handleToogleMobileData = async (is_enabled) => {
+    try {
+      if (device) {
+        const response = await fetch(
+          `${getBaseUrl()}/api/network/${device}/mobile-data/toggle`,{
+            method:"POST"
+          }
+        );
+        const data = await response.json();
+        const state = is_enabled ? "Disable" : "Enable"
+        if (response.status !== 200) {
+          if (!toast.isActive("failed-toggle-mobile-data")) {
+            toast({
+              id: "failed-toggle-mobile-data",
+              title: `Failed.`,
+              status: "error",
+              description: `Failed to ${state} Mobile Data.`,
+              isClosable: true,
+            })
+          }
+        } else {
+          toast({
+            title: `Success.`,
+            status: "success",
+            description: `Success ${state} Mobile Data.`,
+            isClosable: true,
+          })
+          fetchData()
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
   const handleRefresh = () => {
     const id = "refresh_device_network";
     if (!toast.isActive(id)) {
@@ -83,7 +117,7 @@ const DeviceNetwork = () => {
     <>
       {deviceNetwork && device ? (
         <Card mt={10} boxShadow="lg">
-        <CardHeader borderBottom="1px">
+          <CardHeader borderBottom="1px">
             <Flex spacing='4'>
               <Flex flex='1' gap='4' alignItems='center' flexWrap='wrap'>
                 <Heading size="md">Device Info</Heading>
@@ -96,7 +130,7 @@ const DeviceNetwork = () => {
                   onClick={handleRefresh}
                   icon={<LuRefreshCw />}
                 />
-            </Tooltip>
+              </Tooltip>
             </Flex>
           </CardHeader>
           <CardBody>
@@ -121,7 +155,7 @@ const DeviceNetwork = () => {
                 {
                   deviceNetwork.carriers.map((carrier) => (
                     <TabPanel key={carrier.name}>
-                      <DeviceNetworkCarrier carrier={carrier} />
+                      <DeviceNetworkCarrier carrier={carrier} loadingRefresh={loading} handleToogleMobileData={handleToogleMobileData} />
                     </TabPanel>
                   ))
                 }
