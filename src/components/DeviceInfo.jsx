@@ -20,8 +20,8 @@ import { LiaIdCard } from "react-icons/lia";
 import { ImAndroid } from "react-icons/im";
 import { GiRobberMask } from "react-icons/gi";
 import DeviceInfoListItem from "./DeviceInfoListItem";
-import { BASE_URL } from "../utils/config";
 import { LuRefreshCw } from "react-icons/lu";
+import { getBaseUrl } from "../utils/utils";
 
 const DeviceInfo = () => {
   const { device } = useDevice();
@@ -34,7 +34,7 @@ const DeviceInfo = () => {
       if (device) {
         setLoading(true)
         const response = await fetch(
-          `${BASE_URL}/api/device/${device}`
+          `${getBaseUrl()}/api/device/${device}`
         );
         const data = await response.json();
         if (response.status !== 200) {

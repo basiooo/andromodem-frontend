@@ -18,10 +18,10 @@ import { useDevice } from "../hooks/useDevice";
 import { TbMobiledata } from "react-icons/tb";
 import DeviceNetworkWifi from "./DeviceNetworkWifi";
 import DeviceNetworkCarrier from "./DeviceNetworkCarrier";
-import { BASE_URL } from "../utils/config";
 import { MdOutlineMobiledataOff, MdOutlineSignalWifi4Bar } from "react-icons/md";
 import { CONNECTION_STATE } from "../utils/const";
 import { LuRefreshCw } from "react-icons/lu";
+import { getBaseUrl } from "../utils/utils";
 
 const DeviceNetwork = () => {
   const { device } = useDevice();
@@ -34,7 +34,7 @@ const DeviceNetwork = () => {
       if (device) {
         setLoading(true)
         const response = await fetch(
-          `${BASE_URL}/api/network/${device}`
+          `${getBaseUrl()}/api/network/${device}`
         );
         const data = await response.json();
         if (response.status !== 200) {

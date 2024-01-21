@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { LuRefreshCw } from "react-icons/lu";
 import { useDevice } from "../hooks/useDevice";
-import { BASE_URL } from "../utils/config";
+import { getBaseUrl } from "../utils/utils";
 
 const DeviceSelector = () => {
   const [devices, setDevices] = useState([]);
@@ -24,7 +24,7 @@ const DeviceSelector = () => {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${BASE_URL}/api/devices/`);
+      const response = await fetch(`${getBaseUrl()}/api/devices/`);
       const data = await response.json();
       setDevices(data.devices);
     } catch (error) {
