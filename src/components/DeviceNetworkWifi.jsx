@@ -7,7 +7,7 @@ const DeviceNetworkWifi = ({ wifi }) => {
         <Table>
     <Tbody>
       <Tr>
-        <Td w={10}>Connected</Td>
+        <Td w={10}>Status</Td>
         <Td w={1}>:</Td>
         <Td textAlign="start">{wifi.connected ? "Connected": "Not Connect"}</Td>
       </Tr>

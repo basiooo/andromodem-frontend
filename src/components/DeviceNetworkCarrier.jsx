@@ -7,9 +7,10 @@ import {
   MdSignalCellular3Bar,
   MdSignalCellular4Bar,
 } from "react-icons/md";
-import DeviceNetworkLte from "./DeviceNetworkLte";
+import { CONNECTION_STATE } from "../utils/const";
 
-const signalLevelToIcon = (level) => {
+const signalLevelToIcon = (data) => {
+  const level = data.level ?? data.mLevel;
   switch (level) {
     case "1":
       return <MdSignalCellular1Bar fontSize={30} />;
@@ -29,19 +30,19 @@ const DeviceNetworkCarrier = ({ carrier }) => {
       <TableContainer>
         <Table>
           <Tbody>
-            {carrier.connection_state == "Connected" ||
-            carrier.connection_state == "Connecting" ||
-            carrier.connection_state == "Disconnected" ? (
+            {carrier.connection_state == CONNECTION_STATE.CONNECTED ||
+            carrier.connection_state == CONNECTION_STATE.CONNECTING ||
+            carrier.connection_state == CONNECTION_STATE.DISCONNECTED ? (
               <Tr>
                 <Td w={10}>Action</Td>
                 <Td w={1}>:</Td>
                 <Td textAlign="start">
-                  <Button colorScheme="blue">
-                    {carrier.connection_state == "Connected" ||
-                    carrier.connection_state == "Connecting"
+                  <Button colorScheme="blue" size='sm'>
+                    {carrier.connection_state == CONNECTION_STATE.CONNECTED ||
+                    carrier.connection_state == CONNECTION_STATE.CONNECTING
                       ? "Disable Data"
                       : "Enable Data"}
-                  </Button>{" "}
+                  </Button>
                 </Td>
               </Tr>
             ) : (
@@ -64,11 +65,22 @@ const DeviceNetworkCarrier = ({ carrier }) => {
               <Td textAlign="start">
                 {signalLevelToIcon(
                   carrier.signal_strength[Object.keys(carrier.signal_strength)]
-                    .level
                 )}
               </Td>
             </Tr>
-            <DeviceNetworkLte lte={carrier.signal_strength["Lte"]} />
+            {
+              Object.entries(carrier.signal_strength[Object.keys(carrier.signal_strength)]).map(([key,value])=>{
+                return (
+                  <Tr>
+                    <Td w={10}>{key}</Td>
+                    <Td w={1}>:</Td>
+                    <Td textAlign="start">
+                      {value}
+                    </Td>
+                  </Tr>
+                )
+              })
+            }
           </Tbody>
         </Table>
       </TableContainer>

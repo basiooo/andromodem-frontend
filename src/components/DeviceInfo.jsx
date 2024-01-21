@@ -59,7 +59,7 @@ const DeviceInfo = () => {
                 <List spacing={3}>
                   <DeviceInfoListItem icon={ImAndroid} label="Android" value={deviceInfo?.android_version}/>
                   <DeviceInfoListItem icon={CiBatteryFull} label="Battery Level" value={deviceInfo?.battery_level}/>
-                  <DeviceInfoListItem icon={GiRobberMask} label="Root" value={deviceInfo.root.is_rooted ? <>Yes ({deviceInfo?.root.name}:{deviceInfo?.root.version})</> : "None"}/>
+                  <DeviceInfoListItem icon={GiRobberMask} label="Root" value={deviceInfo.root.is_rooted ? <>Rooted ({deviceInfo?.root.name}:{deviceInfo?.root.version})</> : "Not Rooted"}/>
                 </List>
               </GridItem>
             </Grid>
