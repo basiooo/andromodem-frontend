@@ -2,7 +2,9 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Flex,
   Heading,
+  IconButton,
   Tab,
   TabList,
   TabPanel,
@@ -19,49 +21,83 @@ import DeviceNetworkCarrier from "./DeviceNetworkCarrier";
 import { BASE_URL } from "../utils/config";
 import { MdOutlineMobiledataOff, MdOutlineSignalWifi4Bar } from "react-icons/md";
 import { CONNECTION_STATE } from "../utils/const";
+import { LuRefreshCw } from "react-icons/lu";
 
 const DeviceNetwork = () => {
   const { device } = useDevice();
   const [deviceNetwork, setDeviceNetwork] = useState();
   const toast = useToast();
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (device) {
-          const response = await fetch(
-            `${BASE_URL}/api/network/${device}`
-          );
-          const data = await response.json();
-          if (response.status !== 200) {
-            if (!toast.isActive("failed-get-device")) {
-              toast({
-                id: "failed-get-device",
-                title: `Failed Get Device.`,
-                status: "error",
-                description: data.error ?? "Unknown Error",
-                isClosable: true,
-              })
-            }
-            setDeviceNetwork(undefined);
-          } else {
-            setDeviceNetwork(data);
+  const fetchData = async (is_refresh=true) => {
+    try {
+      if (device) {
+        setLoading(true)
+        const response = await fetch(
+          `${BASE_URL}/api/network/${device}`
+        );
+        const data = await response.json();
+        if (response.status !== 200) {
+          if (!toast.isActive("failed-get-device")) {
+            toast({
+              id: "failed-get-device",
+              title: `Failed Get Device.`,
+              status: "error",
+              description: data.error ?? "Unknown Error",
+              isClosable: true,
+            })
           }
+          if(!is_refresh){
+            setDeviceNetwork(undefined);
+          }
+        } else {
+          setDeviceNetwork(data);
         }
-      } catch (error) {
-        setDeviceNetwork(undefined);
-        console.error("Error fetching data:", error);
       }
-    };
+    } catch (error) {
+      if(!is_refresh){
+        setDeviceNetwork(undefined);
+      }
+      console.error("Error fetching data:", error);
+    }
+    finally{
+      setLoading(false)
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, [device]);
 
+  const handleRefresh = () => {
+    const id = "refresh_device_network";
+    if (!toast.isActive(id)) {
+      toast({
+        isClosable: true,
+        id,
+        title: "Refreshing Device Network",
+      });
+    }
+    fetchData();
+  };
   return (
     <>
       {deviceNetwork && device ? (
         <Card mt={10} boxShadow="lg">
-          <CardHeader borderBottom="1px">
-            <Heading size="md">Network Info</Heading>
+        <CardHeader borderBottom="1px">
+            <Flex spacing='4'>
+              <Flex flex='1' gap='4' alignItems='center' flexWrap='wrap'>
+                <Heading size="md">Device Info</Heading>
+              </Flex>
+              <Tooltip label="Refresh Device Network">
+                <IconButton
+                  aria-label="Refresh"
+                  isRound={true}
+                  isLoading={loading}
+                  onClick={handleRefresh}
+                  icon={<LuRefreshCw />}
+                />
+            </Tooltip>
+            </Flex>
           </CardHeader>
           <CardBody>
             <Tabs>
