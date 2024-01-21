@@ -42,8 +42,8 @@ const DeviceNetwork = () => {
                 description: data.error ?? "Unknown Error",
                 isClosable: true,
               })
-              setDeviceNetwork(undefined);
             }
+            setDeviceNetwork(undefined);
           } else {
             setDeviceNetwork(data);
           }
