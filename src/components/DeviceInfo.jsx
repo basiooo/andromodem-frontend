@@ -6,6 +6,8 @@ import {
   GridItem,
   Heading,
   List,
+  Toast,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDevice } from "../hooks/useDevice";
@@ -21,6 +23,7 @@ import { BASE_URL } from "../utils/config";
 const DeviceInfo = () => {
   const { device } = useDevice();
   const [deviceInfo, setDeviceInfo] = useState();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,9 +33,23 @@ const DeviceInfo = () => {
             `${BASE_URL}/api/device/${device}`
           );
           const data = await response.json();
-          setDeviceInfo(data);
+          if (response.status !== 200){
+            if(!toast.isActive("failed-get-device")){
+              toast({
+                id:"failed-get-device",
+                title: `Failed Get Device.`,
+                status: "error",
+                description: data.error?? "Unknown Error",
+                isClosable: true,
+              })
+            }
+            setDeviceInfo(undefined);
+          }else{
+            setDeviceInfo(data);
+          }
         }
       } catch (error) {
+        setDeviceInfo(undefined);
         console.error("Error fetching data:", error);
       }
     };

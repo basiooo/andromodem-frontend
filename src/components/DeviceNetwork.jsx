@@ -9,6 +9,7 @@ import {
   TabPanels,
   Tabs,
   Tooltip,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDevice } from "../hooks/useDevice";
@@ -22,6 +23,7 @@ import { CONNECTION_STATE } from "../utils/const";
 const DeviceNetwork = () => {
   const { device } = useDevice();
   const [deviceNetwork, setDeviceNetwork] = useState();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,9 +33,23 @@ const DeviceNetwork = () => {
             `${BASE_URL}/api/network/${device}`
           );
           const data = await response.json();
-          setDeviceNetwork(data);
+          if (response.status !== 200) {
+            if (!toast.isActive("failed-get-device")) {
+              toast({
+                id: "failed-get-device",
+                title: `Failed Get Device.`,
+                status: "error",
+                description: data.error ?? "Unknown Error",
+                isClosable: true,
+              })
+              setDeviceNetwork(undefined);
+            }
+          } else {
+            setDeviceNetwork(data);
+          }
         }
       } catch (error) {
+        setDeviceNetwork(undefined);
         console.error("Error fetching data:", error);
       }
     };
@@ -53,12 +69,12 @@ const DeviceNetwork = () => {
                 {
                   deviceNetwork.carriers.map((carrier) => (
                     <Tab key={carrier.name}>
-                      {carrier.name} 
-                      {(carrier.connection_state == CONNECTION_STATE.CONNECTED || carrier.connection_state == CONNECTION_STATE.CONNECTING)? 
+                      {carrier.name}
+                      {(carrier.connection_state == CONNECTION_STATE.CONNECTED || carrier.connection_state == CONNECTION_STATE.CONNECTING) ?
                         <Tooltip shouldWrapChildren label={deviceNetwork.wifi.connected ? `mobile data is ${carrier.connection_state} but not used when wifi is connected` : carrier.connection_state}>
-                          {deviceNetwork.wifi.connected? <MdOutlineMobiledataOff color="red" fontSize={23}/> : <TbMobiledata color="green"fontSize={23} />}
+                          {deviceNetwork.wifi.connected ? <MdOutlineMobiledataOff color="red" fontSize={23} /> : <TbMobiledata color="green" fontSize={23} />}
                         </Tooltip> :
-                      ""
+                        ""
                       }
                     </Tab>
                   ))
