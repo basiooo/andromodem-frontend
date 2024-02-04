@@ -71,6 +71,7 @@ const DeviceNetwork = () => {
   const handleToogleMobileData = async (is_enabled) => {
     try {
       if (device) {
+        setLoading(true)
         const response = await fetch(
           `${getBaseUrl()}/api/network/${device}/mobile-data/toggle`,{
             method:"POST"
@@ -100,6 +101,8 @@ const DeviceNetwork = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    }finally {
+      setLoading(false)
     }
   }
   const handleRefresh = () => {
